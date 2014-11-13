@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>it.uniroma2.sag.kelp</groupId>
+  <artifactId>tree-kernel</artifactId>
+  <version>0.0.9-SNAPSHOT</version>
+  <name>TreeKernel</name>
+  
+  <repositories>
+		<repository>
+			<id>sag_repo_snap</id>
+			<name>Sag Libs Repository Snapshots</name>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/libs-snapshot-local/</url>
+		</repository>
+		<repository>
+			<id>sag_repo_release</id>
+			<name>Sag Libs Repository Stable</name>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/libs-release-local/</url>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalparam>-header &apos;&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&quot;&gt;&lt;/script&gt;&apos;</additionalparam>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>bundle-sources</id>
+						<phase>package</phase>
+						<goals>
+							<!-- produce source artifact for main project sources -->
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>
+				com.googlecode.efficient-java-matrix-library
+			</groupId>
+			<artifactId>ejml</artifactId>
+			<version>0.24</version>
+		</dependency>
+		<dependency>
+			<groupId>it.uniroma2.sag.kelp</groupId>
+			<artifactId>discreterepresentation</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
