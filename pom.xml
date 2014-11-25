@@ -1,15 +1,28 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>it.uniroma2.sag.kelp</groupId>
-  <artifactId>tree-kernel</artifactId>
-  <version>0.0.9-SNAPSHOT</version>
-  <name>TreeKernel</name>
-  <url>http://sag.art.uniroma2.it/demo-software/kelp/</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>it.uniroma2.sag.kelp</groupId>
+	<artifactId>tree-kernel</artifactId>
+	<version>0.0.9-SNAPSHOT</version>
+	<name>TreeKernel</name>
+	<url>http://sag.art.uniroma2.it/demo-software/kelp/</url>
 	<organization>
 		<name>Semantic Analytics Group @ Uniroma2</name>
 		<url>http://sag.art.uniroma2.it</url>
 	</organization>
-		<repositories>
+	<distributionManagement>
+		<repository>
+			<id>sag_repo_release</id>
+			<name>Sag Libs Repository Stable</name>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/kelp-release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>sag_repo_snap</id>
+			<name>Sag Libs Repository Snapshots</name>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/kelp-snapshot/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<repositories>
 		<repository>
 			<id>sag_repo_snap</id>
 			<name>Sag Libs Repository Snapshots</name>
@@ -56,7 +69,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<additionalparam>-header &apos;&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&quot;&gt;&lt;/script&gt;&apos;</additionalparam>
+					<additionalparam>-header &apos;&lt;script
+						type=&quot;text/javascript&quot;
+						src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&quot;&gt;&lt;/script&gt;&apos;</additionalparam>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -75,7 +90,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>
