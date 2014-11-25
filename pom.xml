@@ -4,8 +4,12 @@
   <artifactId>tree-kernel</artifactId>
   <version>0.0.9-SNAPSHOT</version>
   <name>TreeKernel</name>
-  
-  <repositories>
+  <url>http://sag.art.uniroma2.it/demo-software/kelp/</url>
+	<organization>
+		<name>Semantic Analytics Group @ Uniroma2</name>
+		<url>http://sag.art.uniroma2.it</url>
+	</organization>
+		<repositories>
 		<repository>
 			<id>sag_repo_snap</id>
 			<name>Sag Libs Repository Snapshots</name>
@@ -19,7 +23,7 @@
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
-			<url>http://sag.art.uniroma2.it:8081/artifactory/libs-snapshot-local/</url>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/kelp-snapshot/</url>
 		</repository>
 		<repository>
 			<id>sag_repo_release</id>
@@ -34,7 +38,7 @@
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
-			<url>http://sag.art.uniroma2.it:8081/artifactory/libs-release-local/</url>
+			<url>http://sag.art.uniroma2.it:8081/artifactory/kelp-release/</url>
 		</repository>
 	</repositories>
 	<build>
