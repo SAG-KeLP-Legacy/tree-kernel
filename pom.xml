@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.uniroma2.sag.kelp</groupId>
 	<artifactId>tree-kernel</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>TreeKernel</name>
 	<url>http://sag.art.uniroma2.it/demo-software/kelp/</url>
 	<organization>
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>it.uniroma2.sag.kelp</groupId>
 			<artifactId>discreterepresentation</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
