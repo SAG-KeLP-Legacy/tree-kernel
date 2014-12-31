@@ -15,12 +15,13 @@
 
 package it.uniroma2.sag.kelp.kernel.tree;
 
-import it.uniroma2.sag.kelp.data.representation.tree.TreeNode;
-import it.uniroma2.sag.kelp.data.representation.tree.TreeNodePairs;
 import it.uniroma2.sag.kelp.data.representation.tree.TreeRepresentation;
+import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNode;
+import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNodePairs;
 import it.uniroma2.sag.kelp.kernel.DirectKernel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -28,23 +29,22 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * Partial Tree Kernel implementation.
  * 
- * A Partial Tree Kernel is a convolution kernel. The kernel function is defined as:
- * </br>
+ * A Partial Tree Kernel is a convolution kernel. The kernel function is defined
+ * as: </br>
  * 
- * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}} \Delta(n_1,n_2)\)
+ * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}}
+ * \Delta(n_1,n_2)\)
  * 
- * </br>
- * where \(\Delta(n_1,n_2)=\sum^{|F|}_i=1 I_i(n_1) I_i(n_2)\), that is the number of 
- * common fragments rooted at the n1 and n2. It can be computed as:
- * </br>
- * - if the node  labels of \(n_1\) and \(n_2\) are different then \(\Delta(n_1,n_2)=0\) </br>
- * - else 
- * \(\Delta(n_1,n_2)= \mu(\lambda^2 + \sum_{J_1, J_2, l(J_1)=l(J_2)} \lambda^{d(J_1)+d(J_2)} \prod_{i=1}^{l(J_1)} \Delta(c_{n_1}[J_{1i}], c_{n_2}[J_{2i}])\)
+ * </br> where \(\Delta(n_1,n_2)=\sum^{|F|}_i=1 I_i(n_1) I_i(n_2)\), that is the
+ * number of common fragments rooted at the n1 and n2. It can be computed as:
+ * </br> - if the node labels of \(n_1\) and \(n_2\) are different then
+ * \(\Delta(n_1,n_2)=0\) </br> - else \(\Delta(n_1,n_2)= \mu(\lambda^2 +
+ * \sum_{J_1, J_2, l(J_1)=l(J_2)} \lambda^{d(J_1)+d(J_2)} \prod_{i=1}^{l(J_1)}
+ * \Delta(c_{n_1}[J_{1i}], c_{n_2}[J_{2i}])\)
  * 
- * </br></br>
- * Fore details see 
- * [Moschitti, EACL2006] Alessandro Moschitti. Efficient convolution kernels for
- * dependency and constituent syntactic trees. In ECML 2006, Berlin, Germany.
+ * </br></br> Fore details see [Moschitti, EACL2006] Alessandro Moschitti.
+ * Efficient convolution kernels for dependency and constituent syntactic trees.
+ * In ECML 2006, Berlin, Germany.
  * 
  * @author Danilo Croce, Giuseppe Castellucci
  */
@@ -52,7 +52,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 	/**
-	 * Vertial Decay Factor
+	 * Vertical Decay Factor
 	 */
 	private float mu;
 
@@ -79,38 +79,47 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 	private static final int MAX_RECURSION = 40;
 
-	
-	private DeltaMatrix delta_matrix;
+	private static final int MAX_NUMBER_OF_NODES = 300;
+
+	private final float delta_matrix[][] = new float[MAX_NUMBER_OF_NODES][MAX_NUMBER_OF_NODES];
+
 	private float[][] kernel_mat_buffer = new float[MAX_RECURSION][MAX_CHILDREN];
 	private float[][][] DPS_buffer = new float[MAX_RECURSION][MAX_CHILDREN + 1][MAX_CHILDREN + 1];
 	private float[][][] DP_buffer = new float[MAX_RECURSION][MAX_CHILDREN + 1][MAX_CHILDREN + 1];
-	
+
 	/**
-	 * Default constructor. It should be used only for json serialization/deserialization purposes
-	 * This constructor by default uses lambda=0.4, mu=0.4, terminalFactor=1 and it forces
-	 * to operate to the represenatation whose identifier is "0".
+	 * Default constructor. It should be used only for json
+	 * serialization/deserialization purposes This constructor by default uses
+	 * lambda=0.4, mu=0.4, terminalFactor=1 and it forces to operate to the
+	 * represenatation whose identifier is "0".
 	 * 
-	 * Please use the PartialTreeKernel(String) or PartialTreeKernel(float,float,float,String)
-	 * to use a Partial Tree Kernel in your application.
+	 * Please use the PartialTreeKernel(String) or
+	 * PartialTreeKernel(float,float,float,String) to use a Partial Tree Kernel
+	 * in your application.
 	 */
 	public PartialTreeKernel() {
-		this(0.4f,0.4f,1f,"0");
+		this(0.4f, 0.4f, 1f, "0");
 	}
 
 	/**
 	 * This constructor by default uses lambda=0.4, mu=0.4, terminalFactor=1
 	 */
 	public PartialTreeKernel(String representationIdentifier) {
-		this(0.4f,0.4f,1f,representationIdentifier);
+		this(0.4f, 0.4f, 1f, representationIdentifier);
 	}
 
 	/**
-	 * A Constructor for the Partial Tree Kernel in which parameters can be set manually.
+	 * A Constructor for the Partial Tree Kernel in which parameters can be set
+	 * manually.
 	 * 
-	 * @param LAMBDA lambda value in the PTK formula
-	 * @param MU mu value of the PTK formula
-	 * @param terminalFactor terminal factor 
-	 * @param representationIdentifier the representation on which operate
+	 * @param LAMBDA
+	 *            lambda value in the PTK formula
+	 * @param MU
+	 *            mu value of the PTK formula
+	 * @param terminalFactor
+	 *            terminal factor
+	 * @param representationIdentifier
+	 *            the representation on which operate
 	 */
 	public PartialTreeKernel(float LAMBDA, float MU, float terminalFactor,
 			String representationIdentifier) {
@@ -119,8 +128,6 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		this.lambda2 = LAMBDA * LAMBDA;
 		this.mu = MU;
 		this.terminalFactor = terminalFactor;
-
-		this.delta_matrix = new DeltaMatrix();
 	}
 
 	/**
@@ -139,24 +146,17 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		ArrayList<TreeNodePairs> intersect = new ArrayList<TreeNodePairs>();
 
 		int i = 0, j = 0, j_old, j_final;
-		int n_a, n_b;
+
 		int cfr;
-		TreeNode[] list_a, list_b;
-
-		list_a = a.getOrderedNodeSetByLabel();
-		list_b = b.getOrderedNodeSetByLabel();
-
-		n_a = list_a.length;
-		n_b = list_b.length;
-
-		String a_name[] = a.getNodeNames();
-		int[] a_id = a.getNodeIdsSortedByName();
-		String b_name[] = b.getNodeNames();
-		int[] b_id = b.getNodeIdsSortedByName();
+		List<TreeNode> nodesA = a.getOrderedNodeSetByLabel();
+		List<TreeNode> nodesB = b.getOrderedNodeSetByLabel();
+		int n_a = nodesA.size();
+		int n_b = nodesB.size();
 
 		while (i < n_a && j < n_b) {
 
-			if ((cfr = (a_name[i].compareTo(b_name[j]))) > 0)
+			if ((cfr = (nodesA.get(i).getLabel().compareTo(nodesB.get(j)
+					.getLabel()))) > 0)
 				j++;
 			else if (cfr < 0)
 				i++;
@@ -164,16 +164,22 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 				j_old = j;
 				do {
 					do {
-						intersect.add(new TreeNodePairs(list_a[i], list_b[j]));
+						intersect.add(new TreeNodePairs(nodesA.get(i), nodesB
+								.get(j)));
 
-						delta_matrix.add(a_id[i], b_id[j], NO_RESPONSE);
+						delta_matrix[nodesA.get(i).getId()][nodesB.get(j)
+								.getId()] = NO_RESPONSE;
 
 						j++;
-					} while (j < n_b && (a_name[i].equals(b_name[j])));
+					} while (j < n_b
+							&& (nodesA.get(i).getLabel().equals(nodesB.get(j)
+									.getLabel())));
 					i++;
 					j_final = j;
 					j = j_old;
-				} while (i < n_a && (a_name[i].equals(b_name[j])));
+				} while (i < n_a
+						&& (nodesA.get(i).getLabel().equals(nodesB.get(j)
+								.getLabel())));
 				j = j_final;
 			}
 		}
@@ -192,8 +198,6 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	 */
 	public float evaluateKernelNotNormalize(TreeRepresentation a,
 			TreeRepresentation b) {
-
-		delta_matrix.clear();
 
 		ArrayList<TreeNodePairs> pairs = determineSubList(a, b);
 
@@ -245,16 +249,16 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	private float ptkDeltaFunction(TreeNode Nx, TreeNode Nz) {
 		float sum = 0;
 
-		if (delta_matrix.get(Nx.getId(), Nz.getId()) != NO_RESPONSE)
-			return delta_matrix.get(Nx.getId(), Nz.getId()); // already there
+		if (delta_matrix[Nx.getId()][Nz.getId()] != NO_RESPONSE)
+			return delta_matrix[Nx.getId()][Nz.getId()]; // already there
 
 		if (!Nx.getLabel().equals(Nz.getLabel())) {
-			delta_matrix.add(Nx.getId(), Nz.getId(), 0);
+			delta_matrix[Nx.getId()][Nz.getId()] = 0;
 			return 0;
 
 		} else if (Nx.getNoOfChildren() == 0 || Nz.getNoOfChildren() == 0) {
-			delta_matrix.add(Nx.getId(), Nz.getId(), mu * lambda2
-					* terminalFactor);
+			delta_matrix[Nx.getId()][Nz.getId()] = mu * lambda2
+					* terminalFactor;
 			return mu * lambda2 * terminalFactor;
 		} else {
 			float delta_sk = stringKernelDeltaFunction(Nx.getChildren(),
@@ -262,8 +266,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 			sum = mu * (lambda2 + delta_sk);
 
-			delta_matrix.add(Nx.getId(), Nz.getId(), sum);
-
+			delta_matrix[Nx.getId()][Nz.getId()] = sum;
 			return sum;
 		}
 
@@ -304,7 +307,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		float[] kernel_mat = kernel_mat_buffer[recursion_id];
 
 		recursion_id++;
-		
+
 		int i, j, l, p;
 		float K;
 
@@ -353,7 +356,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		}
 
 		recursion_id--;
-		
+
 		return K;
 	}
 

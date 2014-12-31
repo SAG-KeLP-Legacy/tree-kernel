@@ -15,13 +15,13 @@
 
 package it.uniroma2.sag.kelp.kernel.tree;
 
-
-import it.uniroma2.sag.kelp.data.representation.tree.TreeNode;
-import it.uniroma2.sag.kelp.data.representation.tree.TreeNodePairs;
 import it.uniroma2.sag.kelp.data.representation.tree.TreeRepresentation;
+import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNode;
+import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNodePairs;
 import it.uniroma2.sag.kelp.kernel.DirectKernel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -31,18 +31,21 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * A SubTree Kernel is a convolution kernel. The kernel function is defined as:
  * </br>
  * 
- * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}} \Delta(n_1,n_2)\)
+ * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}}
+ * \Delta(n_1,n_2)\)
  * 
  * </br>
  * 
- * where \(\Delta(n_1,n_2)\) can be computed as:</br>
- * - if productions at \(n_1\) and \(n_2\) are different then \(\Delta(n_1,n_2)=0\)</br>
- * - if the productions at n1 and n2 are the same, and \(n_1\) and \(n_2\) have only leaf children then \(\Delta(n_1,n_2)=\lambda\)</br>
- * - if the productions at n1 and n2 are the same, and \(n_1\) and \(n_2\) are not pre-terminals then</br>
- *  \(\Delta(n_1,n_2)=\lambda \prod_{j=1}^{nc(n_1)} (\sigma + \Delta(c_{n_1}^j, c_{n_2}^j))\)
+ * where \(\Delta(n_1,n_2)\) can be computed as:</br> - if productions at
+ * \(n_1\) and \(n_2\) are different then \(\Delta(n_1,n_2)=0\)</br> - if the
+ * productions at n1 and n2 are the same, and \(n_1\) and \(n_2\) have only leaf
+ * children then \(\Delta(n_1,n_2)=\lambda\)</br> - if the productions at n1 and
+ * n2 are the same, and \(n_1\) and \(n_2\) are not pre-terminals then</br>
+ * \(\Delta(n_1,n_2)=\lambda \prod_{j=1}^{nc(n_1)} (\sigma + \Delta(c_{n_1}^j,
+ * c_{n_2}^j))\)
  * 
- * </br></br>
- * For more details see [Vishwanathan and Smola, 2001; Moschitti, EACL 2006]
+ * </br></br> For more details see [Vishwanathan and Smola, 2001; Moschitti,
+ * EACL 2006]
  * 
  * [Vishwanathan and Smola, 2002], S.V.N. Vishwanathan and A.J. Smola. Fast
  * kernels on strings and trees. In Proceedings of Neural Information Processing
@@ -55,7 +58,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 
 @JsonTypeName("stk")
-public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
+public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 
 	/**
 	 * Decay factor
@@ -100,8 +103,9 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	}
 
 	/**
-	 * SubTree Kernel: default constructor. It should not be used, please use SubTreeKernel(String)
-	 * or SubTreeKernel(float,String). This is only used by the json serializer/deserializer.
+	 * SubTree Kernel: default constructor. It should not be used, please use
+	 * SubTreeKernel(String) or SubTreeKernel(float,String). This is only used
+	 * by the json serializer/deserializer.
 	 */
 	public SubTreeKernel() {
 		this(0.4f, "0");
@@ -125,7 +129,6 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	public void setLambda(float lambda) {
 		this.lambda = lambda;
 	}
-
 
 	/**
 	 * SubTree Kernel Delta Function
@@ -210,23 +213,17 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 		int i = 0, j = 0, j_old, j_final;
 		int n_a, n_b;
 		int cfr;
-		TreeNode[] list_a, list_b;
 
-		list_a = a.getOrderedNodeSetByProduction();
-		list_b = b.getOrderedNodeSetByProduction();
+		List<TreeNode> nodesA = a.getOrderedNodeSetByProduction();
+		List<TreeNode> nodesB = b.getOrderedNodeSetByProduction();
 
-		n_a = list_a.length;
-		n_b = list_b.length;
-
-		String a_name[] = a.getProductionNames();
-		String b_name[] = b.getProductionNames();
-
-		int[] a_id = a.getNodeIdsSortedByProduction();
-		int[] b_id = b.getNodeIdsSortedByProduction();
+		n_a = nodesA.size();
+		n_b = nodesB.size();
 
 		while (i < n_a && j < n_b) {
 
-			if ((cfr = (a_name[i].compareTo(b_name[j]))) > 0)
+			if ((cfr = (nodesA.get(i).getProduction().compareTo(nodesB.get(j)
+					.getProduction()))) > 0)
 				j++;
 			else if (cfr < 0)
 				i++;
@@ -234,16 +231,22 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 				j_old = j;
 				do {
 					do {
-						intersect.add(new TreeNodePairs(list_a[i], list_b[j]));
+						intersect.add(new TreeNodePairs(nodesA.get(i), nodesB
+								.get(j)));
 
-						delta_matrix.add(a_id[i], b_id[j], NO_RESPONSE);
+						delta_matrix.add(nodesA.get(i).getId(), nodesB.get(j)
+								.getId(), NO_RESPONSE);
 
 						j++;
-					} while (j < n_b && (a_name[i].equals(b_name[j])));
+					} while (j < n_b
+							&& (nodesA.get(i).getProduction().equals(nodesB
+									.get(j).getProduction())));
 					i++;
 					j_final = j;
 					j = j_old;
-				} while (i < n_a && (a_name[i].equals(b_name[j])));
+				} while (i < n_a
+						&& (nodesA.get(i).getProduction().equals(nodesB.get(j)
+								.getProduction())));
 				j = j_final;
 			}
 		}
