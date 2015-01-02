@@ -155,8 +155,8 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 		while (i < n_a && j < n_b) {
 
-			if ((cfr = (nodesA.get(i).getLabel().compareTo(nodesB.get(j)
-					.getLabel()))) > 0)
+			if ((cfr = (nodesA.get(i).getContent().getTextFromData()
+					.compareTo(nodesB.get(j).getContent().getTextFromData()))) > 0)
 				j++;
 			else if (cfr < 0)
 				i++;
@@ -172,14 +172,16 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 						j++;
 					} while (j < n_b
-							&& (nodesA.get(i).getLabel().equals(nodesB.get(j)
-									.getLabel())));
+							&& (nodesA.get(i).getContent().getTextFromData()
+									.equals(nodesB.get(j).getContent()
+											.getTextFromData())));
 					i++;
 					j_final = j;
 					j = j_old;
 				} while (i < n_a
-						&& (nodesA.get(i).getLabel().equals(nodesB.get(j)
-								.getLabel())));
+						&& (nodesA.get(i).getContent().getTextFromData()
+								.equals(nodesB.get(j).getContent()
+										.getTextFromData())));
 				j = j_final;
 			}
 		}
@@ -252,7 +254,8 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		if (delta_matrix[Nx.getId()][Nz.getId()] != NO_RESPONSE)
 			return delta_matrix[Nx.getId()][Nz.getId()]; // already there
 
-		if (!Nx.getLabel().equals(Nz.getLabel())) {
+		if (!Nx.getContent().getTextFromData()
+				.equals(Nz.getContent().getTextFromData())) {
 			delta_matrix[Nx.getId()][Nz.getId()] = 0;
 			return 0;
 
@@ -321,7 +324,8 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		kernel_mat[0] = 0;
 		for (i = 1; i <= n; i++) {
 			for (j = 1; j <= m; j++) {
-				if ((Sx.get(i - 1).getLabel().equals(Sz.get(j - 1).getLabel()))) {
+				if ((Sx.get(i - 1).getContent().getTextFromData().equals(Sz
+						.get(j - 1).getContent().getTextFromData()))) {
 					DPS[i][j] = ptkDeltaFunction(Sx.get(i - 1), Sz.get(j - 1));
 					kernel_mat[0] += DPS[i][j];
 				} else
@@ -340,8 +344,11 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 					DP[i][j] = DPS[i][j] + lambda * DP[i - 1][j] + lambda
 							* DP[i][j - 1] - lambda2 * DP[i - 1][j - 1];
 
-					if (Sx.get(i - 1).getLabel()
-							.equals(Sz.get(j - 1).getLabel())) {
+					if (Sx.get(i - 1)
+							.getContent()
+							.getTextFromData()
+							.equals(Sz.get(j - 1).getContent()
+									.getTextFromData())) {
 						DPS[i][j] = ptkDeltaFunction(Sx.get(i - 1),
 								Sz.get(j - 1))
 								* DP[i - 1][j - 1];
