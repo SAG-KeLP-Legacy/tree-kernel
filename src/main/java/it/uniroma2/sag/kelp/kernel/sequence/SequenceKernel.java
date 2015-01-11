@@ -32,7 +32,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	/**
 	 * Gap penalty
 	 */
-	double lambda = 0.75;
+	float lambda = 0.75f;
 
 	public SequenceKernel() {
 		super();
@@ -66,7 +66,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	 * 
 	 * @return 1 if both elements have the same type and label. 0 otherwise
 	 */
-	private double elementSimilarity(SequenceElement se1, SequenceElement se2) {
+	private float elementSimilarity(SequenceElement se1, SequenceElement se2) {
 		if (!se1.getContent().getClass().equals(se2.getContent().getClass()))
 			return 0;
 
@@ -79,7 +79,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	/**
 	 * @return Gap penalty
 	 */
-	public double getLambda() {
+	public float getLambda() {
 		return lambda;
 	}
 
@@ -94,7 +94,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	protected float kernelComputation(SequenceRepresentation repA,
 			SequenceRepresentation repB) {
 
-		double[] sk = stringKernel(repA.getElements(), repB.getElements(),
+		float[] sk = stringKernel(repA.getElements(), repB.getElements(),
 				maxSubseqLeng, lambda);
 		float result = 0;
 		for (int i = 0; i < sk.length; i++)
@@ -107,7 +107,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	 * @param lambda
 	 *            Gap penalty
 	 */
-	public void setLambda(double lambda) {
+	public void setLambda(float lambda) {
 		this.lambda = lambda;
 	}
 
@@ -138,12 +138,12 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	 * 
 	 * 
 	 */
-	private double[] stringKernel(List<SequenceElement> s,
-			List<SequenceElement> t, int n, double lambda) {
+	private float[] stringKernel(List<SequenceElement> s,
+			List<SequenceElement> t, int n, float lambda) {
 		int sl = s.size();
 		int tl = t.size();
 
-		double[][][] Kp = new double[n + 1][sl][tl];
+		float[][][] Kp = new float[n + 1][sl][tl];
 
 		for (int j = 0; j < sl; j++)
 			for (int k = 0; k < tl; k++)
@@ -151,7 +151,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < sl - 1; j++) {
-				double Kpp = 0.0;
+				float Kpp = 0f;
 				for (int k = 0; k < tl - 1; k++) {
 					Kpp = lambda
 							* (Kpp + lambda
@@ -163,9 +163,9 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 			}
 		}
 
-		double[] K = new double[n];
+		float[] K = new float[n];
 		for (int l = 0; l < K.length; l++) {
-			K[l] = 0.0;
+			K[l] = 0f;
 			for (int j = 0; j < sl; j++) {
 				for (int k = 0; k < tl; k++)
 					K[l] += lambda * lambda
