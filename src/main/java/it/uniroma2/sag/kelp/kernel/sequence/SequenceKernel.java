@@ -28,11 +28,11 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	/**
 	 * Maximum length of common subsequences
 	 */
-	int maxSubseqLeng = 4;
+	private int maxSubseqLeng = 4;
 	/**
 	 * Gap penalty
 	 */
-	float lambda = 0.75f;
+	private float lambda = 0.75f;
 
 	public SequenceKernel() {
 		super();
