@@ -6,17 +6,47 @@ import it.uniroma2.sag.kelp.kernel.DirectKernel;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+/**
+ * Sequence Kernel implementation. <br>
+ * A Sequence Kernel is a convolution kernel between seqnences.The algorithm
+ * corresponds to the recursive computation presented in [Bunescu&Mooney,2005]. <br>
+ * <br>
+ * More information at: <br>
+ * [Bunescu&Mooney,2005] Razvan Bunescu and Raymond Mooney. Subsequence kernels
+ * for relation extraction. In Y. Weiss, B. Scholkopf, and J. Platt, editors,
+ * Advances in Neural Information Processing Systems 18, pages 171-178. MIT
+ * Press, Cambridge, MA, 2006.
+ * 
+ * @author Danilo Croce
+ * 
+ */
+@JsonTypeName("seqk")
 public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 
-	// maximum length of common subsequences
+	/**
+	 * Maximum length of common subsequences
+	 */
 	int maxSubseqLeng = 4;
-	// gap penalty
+	/**
+	 * Gap penalty
+	 */
 	double lambda = 0.75;
 
 	public SequenceKernel() {
 		super();
 	}
 
+	/**
+	 * @param representationIdentifier
+	 *            Identifier of the Tree representation on which the kernel
+	 *            works
+	 * @param maxSubseqLeng
+	 *            Maximum length of common subsequences
+	 * @param lambda
+	 *            Gap penalty
+	 */
 	public SequenceKernel(String representationIdentifier, int maxSubseqLeng,
 			float lambda) {
 		super(representationIdentifier);
@@ -25,25 +55,90 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	}
 
 	/**
-	 * Computes the number of common subsequences between two sequences.
+	 * Computes a simple the Identity similarity function between two element of
+	 * the sequence.
+	 * 
+	 * @param se1
+	 *            an element from the first sequence
+	 * 
+	 * @param se2
+	 *            an element from the second sequence
+	 * 
+	 * @return 1 if both elements have the same type and label. 0 otherwise
+	 */
+	private double elementSimilarity(SequenceElement se1, SequenceElement se2) {
+		if (!se1.getContent().getClass().equals(se2.getContent().getClass()))
+			return 0;
+
+		if (se1.getContent().getTextFromData()
+				.equals(se2.getContent().getTextFromData()))
+			return 1;
+		return 0;
+	}
+
+	/**
+	 * @return Gap penalty
+	 */
+	public double getLambda() {
+		return lambda;
+	}
+
+	/**
+	 * @return Maximum length of common subsequences
+	 */
+	public int getMaxSubseqLeng() {
+		return maxSubseqLeng;
+	}
+
+	@Override
+	protected float kernelComputation(SequenceRepresentation repA,
+			SequenceRepresentation repB) {
+
+		double[] sk = stringKernel(repA.getElements(), repB.getElements(),
+				maxSubseqLeng, lambda);
+		float result = 0;
+		for (int i = 0; i < sk.length; i++)
+			result += sk[i];
+
+		return result;
+	}
+
+	/**
+	 * @param lambda
+	 *            Gap penalty
+	 */
+	public void setLambda(double lambda) {
+		this.lambda = lambda;
+	}
+
+	/**
+	 * @param maxSubseqLeng
+	 *            Maximum length of common subsequences
+	 */
+	public void setMaxSubseqLeng(int maxSubseqLeng) {
+		this.maxSubseqLeng = maxSubseqLeng;
+	}
+
+	/**
+	 * Computes the number of common subsequences between two sequences. The
+	 * algorithm corresponds to the recursive computation from Figure 1 in the
+	 * paper [Bunescu&Mooney,2005] where: - K stands for K; - Kp stands for K';
+	 * - Kpp stands for K''; - common stands for c;
 	 * 
 	 * @param s
-	 *            first sequence of features.
+	 *            first sequence
 	 * @param t
-	 *            second sequence of features.
+	 *            second sequence
 	 * @param n
 	 *            maximum subsequence length.
 	 * @param lambda
-	 *            gap penalty.
+	 *            gap penalty
+	 * 
 	 * @return kernel value K[], one position for every length up to n.
 	 * 
-	 *         The algorithm corresponds to the recursive computation from
-	 *         Figure 1 in the paper
-	 *         "Subsequence Kernels for Relation Extraction" (NIPS 2005), where:
-	 *         - K stands for K; - Kp stands for K'; - Kpp stands for K''; -
-	 *         common stands for c;
+	 * 
 	 */
-	protected double[] stringKernel(List<SequenceElement> s,
+	private double[] stringKernel(List<SequenceElement> s,
 			List<SequenceElement> t, int n, double lambda) {
 		int sl = s.size();
 		int tl = t.size();
@@ -80,40 +175,6 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 		}
 
 		return K;
-	}
-
-	/**
-	 * Computes the number of common features between two sets of featurses.
-	 * 
-	 * @param s
-	 *            first set of features.
-	 * @param t
-	 *            second set of features.
-	 * @return number of common features.
-	 * 
-	 *         The use of FeatureDictionary ensures that identical features
-	 *         correspond to the same object reference. Hence, the operator '=='
-	 *         can be used to speed-up the computation.
-	 */
-	private double elementSimilarity(SequenceElement sequenceElement,
-			SequenceElement sequenceElement2) {
-		if (sequenceElement.getContent().getTextFromData()
-				.equals(sequenceElement2.getContent().getTextFromData()))
-			return 1;
-		return 0;
-	}
-
-	@Override
-	protected float kernelComputation(SequenceRepresentation repA,
-			SequenceRepresentation repB) {
-
-		double[] sk = stringKernel(repA.getElements(), repB.getElements(),
-				maxSubseqLeng, lambda);
-		float result = 0;
-		for (int i = 0; i < sk.length; i++)
-			result += sk[i];
-
-		return result;
 	}
 
 }
