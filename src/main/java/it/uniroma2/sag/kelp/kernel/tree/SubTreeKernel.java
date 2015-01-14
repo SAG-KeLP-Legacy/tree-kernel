@@ -19,10 +19,13 @@ import it.uniroma2.sag.kelp.data.representation.tree.TreeRepresentation;
 import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNode;
 import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNodePairs;
 import it.uniroma2.sag.kelp.kernel.DirectKernel;
+import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.DeltaMatrix;
+import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.stk.SubTreeKernelStaticDeltaMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
@@ -68,7 +71,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	/**
 	 * The delta matrix, used to cache the delta functions applied to subtrees
 	 */
-	private DeltaMatrix delta_matrix;
+	private DeltaMatrix deltaMatrix;
 
 	/**
 	 * This value is used to mark node pairs in the delta_matrix that have not
@@ -88,7 +91,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	public SubTreeKernel(float lambda, String representationIdentifier) {
 		super(representationIdentifier);
 		this.lambda = lambda;
-		this.delta_matrix = new DeltaMatrix();
+		this.deltaMatrix = new SubTreeKernelStaticDeltaMatrix();
 	}
 
 	/**
@@ -140,8 +143,8 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	 * @return
 	 */
 	private float stkDeltaFunction(TreeNode Nx, TreeNode Nz) {
-		if (delta_matrix.get(Nx.getId(), Nz.getId()) != NO_RESPONSE)
-			return delta_matrix.get(Nx.getId(), Nz.getId()); // cashed
+		if (deltaMatrix.get(Nx.getId(), Nz.getId()) != NO_RESPONSE)
+			return deltaMatrix.get(Nx.getId(), Nz.getId()); // cashed
 		else {
 			float prod = 1;
 			ArrayList<TreeNode> NxChildren = Nx.getChildren();
@@ -157,7 +160,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 							NzChildren.get(i));
 				}
 			}
-			delta_matrix.add(Nx.getId(), Nz.getId(), lambda * prod);
+			deltaMatrix.add(Nx.getId(), Nz.getId(), lambda * prod);
 			return lambda * prod;
 		}
 	}
@@ -177,7 +180,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 		float k = 0;
 
 		// Initialize the delta function cache
-		delta_matrix.clear();
+		deltaMatrix.clear();
 
 		// Determine the subtrees whose root have the same label. This
 		// optimization has been proposed in [Moschitti, EACL 2006].
@@ -234,7 +237,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 						intersect.add(new TreeNodePairs(nodesA.get(i), nodesB
 								.get(j)));
 
-						delta_matrix.add(nodesA.get(i).getId(), nodesB.get(j)
+						deltaMatrix.add(nodesA.get(i).getId(), nodesB.get(j)
 								.getId(), NO_RESPONSE);
 
 						j++;
@@ -259,6 +262,16 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 			TreeRepresentation repB) {
 		return (float) evaluateKernelNotNormalize((TreeRepresentation) repA,
 				(TreeRepresentation) repB);
+	}
+
+	@JsonIgnore
+	public DeltaMatrix getDeltaMatrix() {
+		return deltaMatrix;
+	}
+
+	@JsonIgnore
+	public void setDeltaMatrix(DeltaMatrix deltaMatrix) {
+		this.deltaMatrix = deltaMatrix;
 	}
 
 }

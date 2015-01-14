@@ -13,60 +13,43 @@
  * limitations under the License.
  */
 
-package it.uniroma2.sag.kelp.kernel.tree;
-
-import gnu.trove.map.hash.TIntFloatHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+package it.uniroma2.sag.kelp.kernel.tree.deltamatrix;
 
 
 /**
  * Sparse Delta Matrix
  * 
  * @author Danilo Croce
- *
+ * 
  */
-public class DeltaMatrix {
-
-	/**
-	 * Sparse implementation of a matrix
-	 */
-	private TIntObjectHashMap<TIntFloatHashMap> matrix;
-
-	public DeltaMatrix() {
-		matrix = new TIntObjectHashMap<TIntFloatHashMap>();
-	}
+public interface DeltaMatrix {
 
 	/**
 	 * Insert a value in the matrix
 	 * 
-	 * @param i row index
-	 * @param j column index
-	 * @param v value to insert in delta_matrix[i][j]
+	 * @param i
+	 *            row index
+	 * @param j
+	 *            column index
+	 * @param v
+	 *            value to insert in delta_matrix[i][j]
 	 */
-	public void add(int i, int j, float v) {
-		if (!matrix.containsKey(i))
-			matrix.put(i, new TIntFloatHashMap());
-		matrix.get(i).put(j, v);
-	}
+	public void add(int i, int j, float v);
 
 	/**
 	 * Get a value from the matrix
 	 * 
-	 * @param i row index
-	 * @param j column index
+	 * @param i
+	 *            row index
+	 * @param j
+	 *            column index
 	 * @return value to retrieve from the delta_matrix[[i][j]
 	 */
-	public float get(int i, int j) {
-		if (!matrix.containsKey(i))
-			return 0;
-		return matrix.get(i).get(j);
-	}
+	public float get(int i, int j);
 
 	/**
 	 * Clear the delta matrix
 	 */
-	public void clear() {
-		matrix.clear();
-	}
+	public void clear();
 
 }
