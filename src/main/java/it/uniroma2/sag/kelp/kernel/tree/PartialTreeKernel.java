@@ -19,6 +19,8 @@ import it.uniroma2.sag.kelp.data.representation.tree.TreeRepresentation;
 import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNode;
 import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNodePairs;
 import it.uniroma2.sag.kelp.kernel.DirectKernel;
+import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.DeltaMatrix;
+import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.StaticDeltaMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,16 +74,18 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	 */
 	private float terminalFactor = 1;
 
+	/**
+	 * The delta matrix, used to cache the delta functions applied to subtrees
+	 */
+	@JsonIgnore
+	private DeltaMatrix deltaMatrix;
+
 	private static final int NO_RESPONSE = -1;
 	private static final int MAX_CHILDREN = 100;
 
 	private int recursion_id = 0;
 
 	private static final int MAX_RECURSION = 40;
-
-	private static final int MAX_NUMBER_OF_NODES = 300;
-
-	private final float delta_matrix[][] = new float[MAX_NUMBER_OF_NODES][MAX_NUMBER_OF_NODES];
 
 	private float[][] kernel_mat_buffer = new float[MAX_RECURSION][MAX_CHILDREN];
 	private float[][][] DPS_buffer = new float[MAX_RECURSION][MAX_CHILDREN + 1][MAX_CHILDREN + 1];
@@ -99,13 +103,6 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	 */
 	public PartialTreeKernel() {
 		this(0.4f, 0.4f, 1f, "0");
-	}
-
-	/**
-	 * This constructor by default uses lambda=0.4, mu=0.4, terminalFactor=1
-	 */
-	public PartialTreeKernel(String representationIdentifier) {
-		this(0.4f, 0.4f, 1f, representationIdentifier);
 	}
 
 	/**
@@ -128,6 +125,14 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		this.lambda2 = LAMBDA * LAMBDA;
 		this.mu = MU;
 		this.terminalFactor = terminalFactor;
+		this.deltaMatrix = new StaticDeltaMatrix();
+	}
+
+	/**
+	 * This constructor by default uses lambda=0.4, mu=0.4, terminalFactor=1
+	 */
+	public PartialTreeKernel(String representationIdentifier) {
+		this(0.4f, 0.4f, 1f, representationIdentifier);
 	}
 
 	/**
@@ -167,8 +172,8 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 						intersect.add(new TreeNodePairs(nodesA.get(i), nodesB
 								.get(j)));
 
-						delta_matrix[nodesA.get(i).getId()][nodesB.get(j)
-								.getId()] = NO_RESPONSE;
+						deltaMatrix.add(nodesA.get(i).getId(), nodesB.get(j)
+								.getId(), NO_RESPONSE);
 
 						j++;
 					} while (j < n_b
@@ -212,6 +217,11 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		return k;
 	}
 
+	@JsonIgnore
+	public DeltaMatrix getDeltaMatrix() {
+		return deltaMatrix;
+	}
+
 	/**
 	 * Get the Vertical Decay factor
 	 * 
@@ -239,6 +249,13 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		return terminalFactor;
 	}
 
+	@Override
+	protected float kernelComputation(TreeRepresentation repA,
+			TreeRepresentation repB) {
+		return (float) evaluateKernelNotNormalize((TreeRepresentation) repA,
+				(TreeRepresentation) repB);
+	}
+
 	/**
 	 * Partial Tree Kernel Delta Function
 	 * 
@@ -251,17 +268,16 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	private float ptkDeltaFunction(TreeNode Nx, TreeNode Nz) {
 		float sum = 0;
 
-		if (delta_matrix[Nx.getId()][Nz.getId()] != NO_RESPONSE)
-			return delta_matrix[Nx.getId()][Nz.getId()]; // already there
+		if (deltaMatrix.get(Nx.getId(), Nz.getId()) != NO_RESPONSE)
+			return deltaMatrix.get(Nx.getId(), Nz.getId()); // already there
 
 		if (!Nx.getContent().getTextFromData()
 				.equals(Nz.getContent().getTextFromData())) {
-			delta_matrix[Nx.getId()][Nz.getId()] = 0;
+			deltaMatrix.add(Nx.getId(), Nz.getId(), 0);
 			return 0;
-
 		} else if (Nx.getNoOfChildren() == 0 || Nz.getNoOfChildren() == 0) {
-			delta_matrix[Nx.getId()][Nz.getId()] = mu * lambda2
-					* terminalFactor;
+			deltaMatrix.add(Nx.getId(), Nz.getId(), mu * lambda2
+					* terminalFactor);
 			return mu * lambda2 * terminalFactor;
 		} else {
 			float delta_sk = stringKernelDeltaFunction(Nx.getChildren(),
@@ -269,10 +285,15 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 			sum = mu * (lambda2 + delta_sk);
 
-			delta_matrix[Nx.getId()][Nz.getId()] = sum;
+			deltaMatrix.add(Nx.getId(), Nz.getId(), sum);
 			return sum;
 		}
 
+	}
+
+	@JsonIgnore
+	public void setDeltaMatrix(DeltaMatrix deltaMatrix) {
+		this.deltaMatrix = deltaMatrix;
 	}
 
 	public void setLambda(float lambda) {
@@ -367,10 +388,4 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		return K;
 	}
 
-	@Override
-	protected float kernelComputation(TreeRepresentation repA,
-			TreeRepresentation repB) {
-		return (float) evaluateKernelNotNormalize((TreeRepresentation) repA,
-				(TreeRepresentation) repB);
-	}
 }

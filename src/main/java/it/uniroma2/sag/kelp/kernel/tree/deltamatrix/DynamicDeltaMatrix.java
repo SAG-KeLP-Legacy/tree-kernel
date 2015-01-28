@@ -1,10 +1,9 @@
-package it.uniroma2.sag.kelp.kernel.tree.deltamatrix.stk;
+package it.uniroma2.sag.kelp.kernel.tree.deltamatrix;
 
 import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.DeltaMatrix;
 
-public class SubTreeKernelDynamicDeltaMatrix implements DeltaMatrix {
+public class DynamicDeltaMatrix implements DeltaMatrix {
 
 
 	/**
@@ -12,7 +11,7 @@ public class SubTreeKernelDynamicDeltaMatrix implements DeltaMatrix {
 	 */
 	private TIntObjectHashMap<TIntFloatHashMap> matrix;
 
-	public SubTreeKernelDynamicDeltaMatrix() {
+	public DynamicDeltaMatrix() {
 		matrix = new TIntObjectHashMap<TIntFloatHashMap>();
 	}
 

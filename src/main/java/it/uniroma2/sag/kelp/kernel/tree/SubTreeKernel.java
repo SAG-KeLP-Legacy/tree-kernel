@@ -20,7 +20,7 @@ import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNode;
 import it.uniroma2.sag.kelp.data.representation.tree.node.TreeNodePairs;
 import it.uniroma2.sag.kelp.kernel.DirectKernel;
 import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.DeltaMatrix;
-import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.stk.SubTreeKernelStaticDeltaMatrix;
+import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.StaticDeltaMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	public SubTreeKernel(float lambda, String representationIdentifier) {
 		super(representationIdentifier);
 		this.lambda = lambda;
-		this.deltaMatrix = new SubTreeKernelStaticDeltaMatrix();
+		this.deltaMatrix = new StaticDeltaMatrix();
 	}
 
 	/**

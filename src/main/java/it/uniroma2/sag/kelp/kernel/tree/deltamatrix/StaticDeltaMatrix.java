@@ -1,8 +1,7 @@
-package it.uniroma2.sag.kelp.kernel.tree.deltamatrix.stk;
+package it.uniroma2.sag.kelp.kernel.tree.deltamatrix;
 
-import it.uniroma2.sag.kelp.kernel.tree.deltamatrix.DeltaMatrix;
 
-public class SubTreeKernelStaticDeltaMatrix implements DeltaMatrix {
+public class StaticDeltaMatrix implements DeltaMatrix {
 
 	private final static int DEFAULTSIZE = 200;
 
@@ -11,11 +10,11 @@ public class SubTreeKernelStaticDeltaMatrix implements DeltaMatrix {
 	 */
 	private float[][] matrix = new float[DEFAULTSIZE][DEFAULTSIZE];
 
-	public SubTreeKernelStaticDeltaMatrix() {
+	public StaticDeltaMatrix() {
 
 	}
 
-	public SubTreeKernelStaticDeltaMatrix(int maxElementSize) {
+	public StaticDeltaMatrix(int maxElementSize) {
 		matrix = new float[maxElementSize][maxElementSize];
 	}
 
