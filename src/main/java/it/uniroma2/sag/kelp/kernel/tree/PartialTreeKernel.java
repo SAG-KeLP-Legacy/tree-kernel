@@ -250,7 +250,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	}
 
 	@Override
-	protected float kernelComputation(TreeRepresentation repA,
+	public float kernelComputation(TreeRepresentation repA,
 			TreeRepresentation repB) {
 		return (float) evaluateKernelNotNormalize((TreeRepresentation) repA,
 				(TreeRepresentation) repB);

@@ -91,7 +91,7 @@ public class SequenceKernel extends DirectKernel<SequenceRepresentation> {
 	}
 
 	@Override
-	protected float kernelComputation(SequenceRepresentation repA,
+	public float kernelComputation(SequenceRepresentation repA,
 			SequenceRepresentation repB) {
 
 		float[] sk = stringKernel(repA.getElements(), repB.getElements(),
