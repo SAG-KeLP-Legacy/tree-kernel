@@ -206,6 +206,9 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	public float evaluateKernelNotNormalize(TreeRepresentation a,
 			TreeRepresentation b) {
 
+		// Initialize the delta function cache
+		deltaMatrix.clear();
+		
 		ArrayList<TreeNodePairs> pairs = determineSubList(a, b);
 
 		float k = 0;
