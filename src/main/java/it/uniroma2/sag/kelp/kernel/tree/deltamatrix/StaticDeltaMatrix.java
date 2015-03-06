@@ -3,12 +3,14 @@ package it.uniroma2.sag.kelp.kernel.tree.deltamatrix;
 
 public class StaticDeltaMatrix implements DeltaMatrix {
 
-	private final static int DEFAULTSIZE = 200;
+	private final static int DEFAULTSIZE = 400;
 
 	/**
 	 * Sparse implementation of a matrix
 	 */
 	private float[][] matrix = new float[DEFAULTSIZE][DEFAULTSIZE];
+	
+	private static final StaticDeltaMatrix instance = new StaticDeltaMatrix(DEFAULTSIZE);
 
 	public StaticDeltaMatrix() {
 
@@ -50,6 +52,10 @@ public class StaticDeltaMatrix implements DeltaMatrix {
 	 */
 	public void clear() {
 
+	}
+	
+	public static StaticDeltaMatrix getInstance(){
+		return instance;
 	}
 
 }

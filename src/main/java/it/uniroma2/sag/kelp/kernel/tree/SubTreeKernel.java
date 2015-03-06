@@ -71,7 +71,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	/**
 	 * The delta matrix, used to cache the delta functions applied to subtrees
 	 */
-	private DeltaMatrix deltaMatrix;
+	private DeltaMatrix deltaMatrix = StaticDeltaMatrix.getInstance();
 
 	/**
 	 * This value is used to mark node pairs in the delta_matrix that have not
@@ -91,7 +91,6 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation> {
 	public SubTreeKernel(float lambda, String representationIdentifier) {
 		super(representationIdentifier);
 		this.lambda = lambda;
-		this.deltaMatrix = new StaticDeltaMatrix();
 	}
 
 	/**

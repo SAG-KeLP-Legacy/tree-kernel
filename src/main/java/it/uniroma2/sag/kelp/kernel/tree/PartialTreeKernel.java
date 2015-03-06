@@ -78,7 +78,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	 * The delta matrix, used to cache the delta functions applied to subtrees
 	 */
 	@JsonIgnore
-	private DeltaMatrix deltaMatrix;
+	private DeltaMatrix deltaMatrix = StaticDeltaMatrix.getInstance();
 
 	private static final int NO_RESPONSE = -1;
 	private static final int MAX_CHILDREN = 100;
@@ -125,7 +125,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 		this.lambda2 = LAMBDA * LAMBDA;
 		this.mu = MU;
 		this.terminalFactor = terminalFactor;
-		this.deltaMatrix = new StaticDeltaMatrix();
+		//this.deltaMatrix = new StaticDeltaMatrix();
 	}
 
 	/**
@@ -206,6 +206,16 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	public float evaluateKernelNotNormalize(TreeRepresentation a,
 			TreeRepresentation b) {
 
+		/*
+		 * TODO CHECK FOR MULTITHREADING WITH SIMONE FILICE AND/OR DANILO CROCE
+		 * 
+		 * In order to avoid collisions in the DeltaMatrix when multiple threads
+		 * call the kernel at the same time, a specific DeltaMatrix for each
+		 * thread should be initialized
+		 */
+		
+		// Initialize the delta function cache
+		deltaMatrix.clear();
 		ArrayList<TreeNodePairs> pairs = determineSubList(a, b);
 
 		float k = 0;
