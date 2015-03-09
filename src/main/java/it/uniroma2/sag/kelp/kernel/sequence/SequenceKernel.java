@@ -10,11 +10,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Sequence Kernel implementation. <br>
- * A Sequence Kernel is a convolution kernel between seqnences.The algorithm
- * corresponds to the recursive computation presented in [Bunescu&Mooney,2005]. <br>
+ * A Sequence Kernel is a convolution kernel between sequences. The algorithm
+ * corresponds to the recursive computation presented in [Bunescu&Mooney,2006]. <br>
  * <br>
  * More information at: <br>
- * [Bunescu&Mooney,2005] Razvan Bunescu and Raymond Mooney. Subsequence kernels
+ * [Bunescu&Mooney,2006] Razvan Bunescu and Raymond Mooney. Subsequence kernels
  * for relation extraction. In Y. Weiss, B. Scholkopf, and J. Platt, editors,
  * Advances in Neural Information Processing Systems 18, pages 171-178. MIT
  * Press, Cambridge, MA, 2006.

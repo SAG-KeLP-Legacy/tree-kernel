@@ -47,12 +47,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * \(\Delta(n_1,n_2)=\lambda \prod_{j=1}^{nc(n_1)} (\sigma + \Delta(c_{n_1}^j,
  * c_{n_2}^j))\)
  * 
- * </br></br> For more details see [Vishwanathan and Smola, 2001; Moschitti,
+ * </br></br> For more details see [Vishwanathan and Smola, 2003; Moschitti,
  * EACL 2006]
  * 
- * [Vishwanathan and Smola, 2002], S.V.N. Vishwanathan and A.J. Smola. Fast
+ * [Vishwanathan and Smola, 2003], S.V.N. Vishwanathan and A.J. Smola. Fast
  * kernels on strings and trees. In Proceedings of Neural Information Processing
- * Systems, 2002.
+ * Systems, 2003.
  * 
  * [Moschitti, EACL2006] Alessandro Moschitti. Making Tree Kernels Practical for
  * Natural Language Learning EACL, (2006)
