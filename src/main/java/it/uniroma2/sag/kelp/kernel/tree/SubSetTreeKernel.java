@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+
 /**
- * SubTree Kernel implementation.
+ * A SubSetTree Kernel is a convolution kernel that evaluates the tree fragments 
+ * shared between two trees. The considered fragments are are subset-trees, i.e. a node and its
+ * partial descendancy (the descendancy can be incomplete in depth, but no partial productions are
+ * allowed; in other words given a node either all its children or none of them must be considered). 
  * 
- * A SubTree Kernel is a convolution kernel that evaluates the tree fragments 
- * shared between two trees. The considered fragments are are subtrees, i.e. a node and its
- * complete descendancy. 
- * 
- * The kernel function is defined as:
+ * A SubSetTree Kernel is a convolution kernel. The kernel function is defined as:
  * </br>
  * 
  * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}}
@@ -46,7 +46,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * productions at n1 and n2 are the same, and \(n_1\) and \(n_2\) have only leaf
  * children then \(\Delta(n_1,n_2)=\lambda\)</br> - if the productions at n1 and
  * n2 are the same, and \(n_1\) and \(n_2\) are not pre-terminals then</br>
- * \(\Delta(n_1,n_2)=\lambda \prod_{j=1}^{nc(n_1)} (\Delta(c_{n_1}^j,
+ * \(\Delta(n_1,n_2)=\lambda \prod_{j=1}^{nc(n_1)} (1 + \Delta(c_{n_1}^j,
  * c_{n_2}^j))\)
  * 
  * </br></br> For more details see [Vishwanathan and Smola, 2003; Moschitti,
@@ -61,9 +61,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Danilo Croce, Giuseppe Castellucci, Simone Filice
  */
-
-@JsonTypeName("stk")
-public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
+@JsonTypeName("sstk")
+public class SubSetTreeKernel extends DirectKernel<TreeRepresentation>{
 
 	/**
 	 * Decay factor
@@ -86,7 +85,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	 *            Identifier of the Tree representation on which the kernel
 	 *            works
 	 */
-	public SubTreeKernel(float lambda, String representationIdentifier) {
+	public SubSetTreeKernel(float lambda, String representationIdentifier) {
 		super(representationIdentifier);
 		this.lambda = lambda;
 	}
@@ -98,7 +97,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	 *            Identifier of the Tree representation on which the kernel
 	 *            works
 	 */
-	public SubTreeKernel(String representationIdentifier) {
+	public SubSetTreeKernel(String representationIdentifier) {
 		this(0.4f, representationIdentifier);
 	}
 
@@ -107,7 +106,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	 * SubTreeKernel(String) or SubTreeKernel(float,String). This is only used
 	 * by the json serializer/deserializer.
 	 */
-	public SubTreeKernel() {
+	public SubSetTreeKernel() {
 		this(0.4f, "0");
 	}
 
@@ -163,10 +162,9 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 
 	/**
 	 * Sets whether the leaves must be involved in the kernel computation.
-	 * When leaves are not included this kernel corresponds
-	 * to the ST kernel in SvmLightTK (option -F 0). 
-	 * When leaves are included this kernel becomes an implicit linear combination
-	 * between the standard ST kernel and a Bag-of-Words on the leaves
+	 * When leaves are included this kernel corresponds to the SST-bow kernel in
+	 * SvmLightTK (option -F 2). When leaves are not included this kernel corresponds
+	 * to the SST kernel in SvmLightTK (option -F 1)
 	 * 
 	 * @param includeLeaves the includeLeaves to set
 	 */
@@ -196,12 +194,12 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 		for (int i = 0; i < pairs.size(); i++) {
 
 			float deltaValue = TreeKernelUtils.productionBasedDeltaFunction(pairs.get(i).getNx(), pairs
-					.get(i).getNz(), 0, lambda, deltaMatrix);
+					.get(i).getNz(), 1, lambda, deltaMatrix);
 
 			sum += deltaValue;
 		}
 
 		return sum;
 	}
-	
+
 }

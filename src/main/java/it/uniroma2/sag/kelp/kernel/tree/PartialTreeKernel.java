@@ -31,7 +31,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * Partial Tree Kernel implementation.
  * 
- * A Partial Tree Kernel is a convolution kernel. The kernel function is defined
+ * A Partial Tree Kernel is a convolution kernel that evaluates the tree fragments 
+ * shared between two trees. The considered fragments are are partial trees, i.e. a node and its
+ * partial descendancy (the descendancy can be incomplete, i.e. a partial production is allowed).
+ * The kernel function is defined
  * as: </br>
  * 
  * \(K(T_1,T_2) = \sum_{n_1 \in N_{T_1}} \sum_{n_2 \in N_{T_2}}
@@ -80,7 +83,6 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	@JsonIgnore
 	private DeltaMatrix deltaMatrix = StaticDeltaMatrix.getInstance();
 
-	private static final int NO_RESPONSE = -1;
 	private static final int MAX_CHILDREN = 100;
 
 	private int recursion_id = 0;
@@ -173,7 +175,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 								.get(j)));
 
 						deltaMatrix.add(nodesA.get(i).getId(), nodesB.get(j)
-								.getId(), NO_RESPONSE);
+								.getId(), DeltaMatrix.NO_RESPONSE);
 
 						j++;
 					} while (j < n_b
@@ -278,7 +280,7 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 	private float ptkDeltaFunction(TreeNode Nx, TreeNode Nz) {
 		float sum = 0;
 
-		if (deltaMatrix.get(Nx.getId(), Nz.getId()) != NO_RESPONSE)
+		if (deltaMatrix.get(Nx.getId(), Nz.getId()) != DeltaMatrix.NO_RESPONSE)
 			return deltaMatrix.get(Nx.getId(), Nz.getId()); // already there
 
 		if (!Nx.getContent().getTextFromData()
@@ -321,12 +323,12 @@ public class PartialTreeKernel extends DirectKernel<TreeRepresentation> {
 
 	/**
 	 * The String Kernel formulation, that recursively estimates the partial
-	 * overal between children sequences.
+	 * overlap between children sequences.
 	 * 
 	 * @param Sx
-	 *            childer of the first subtree
+	 *            children of the first subtree
 	 * @param Sz
-	 *            childer of the second subtree
+	 *            children of the second subtree
 	 * 
 	 * @return string kernel score
 	 */

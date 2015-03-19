@@ -23,6 +23,8 @@ package it.uniroma2.sag.kelp.kernel.tree.deltamatrix;
  * 
  */
 public interface DeltaMatrix {
+	
+	public static final int NO_RESPONSE = -1;
 
 	/**
 	 * Insert a value in the matrix
