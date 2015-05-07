@@ -11,6 +11,8 @@ This is the tree-kernel module of KeLP. It includes various some convolution ker
 * _SubTreeKernel_: it is the tree kernel described in (Vishwanathan '03) and optimized in (Moschitti '06a). It operates on _TreeRepresentations_ evaluating the number of common fragments shared by two trees. 
 The considered fragments are complete subtrees, i.e. a node and its entire descendancy. 
 
+* _SubSetTreeKernel_: it is the tree kernel described in (Vishwanathan '03) and optimized in (Moschitti '06a). It operates on _TreeRepresentations_ evaluating the number of common fragments shared by two trees. The considered fragments are are subset-trees, i.e. a node and its partial descendancy (the descendancy can be incomplete in depth, but no partial productions are allowed; in other words given a node either all its children or none of them must be considered).
+
 * _PartialTreeKernel_: it is the tree kernel described in (Moschitti '06b). It operates on _TreeRepresentations_ evaluating the number of common fragments shared by two trees. 
 The considered fragments are partial subtrees, i.e. a node and its partial descendancy (i.e. partial productions are allowed).
 
