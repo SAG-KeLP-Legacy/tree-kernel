@@ -70,7 +70,7 @@ public class SubTreeKernel extends DirectKernel<TreeRepresentation>{
 	 */
 	private float lambda;
 
-	private boolean includeLeaves;
+	private boolean includeLeaves = true;
 	
 	/**
 	 * The delta matrix, used to cache the delta functions applied to subtrees

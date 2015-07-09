@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.uniroma2.sag.kelp</groupId>
 	<artifactId>tree-kernel</artifactId>
-	<version>1.1.1</version>
+	<version>1.2.0</version>
 	<name>TreeKernel</name>
 	<url>http://sag.art.uniroma2.it/demo-software/kelp/</url>
 	<organization>
@@ -69,9 +69,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<additionalparam>-header &apos;&lt;script
-						type=&quot;text/javascript&quot;
-						src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&quot;&gt;&lt;/script&gt;&apos;</additionalparam>
+					<additionalparam>-header &apos;&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&quot;&gt;&lt;/script&gt;&apos;</additionalparam>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -102,7 +100,7 @@
 		<dependency>
 			<groupId>it.uniroma2.sag.kelp</groupId>
 			<artifactId>discreterepresentation</artifactId>
-			<version>1.1.1</version>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 </project>
